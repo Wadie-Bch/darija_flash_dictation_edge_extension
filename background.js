@@ -37,9 +37,10 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 
   (async () => {
     try {
-      // Messages sent up from offscreen → relay to popup
+      // Messages from offscreen (RECORDING_STATUS, TRANSCRIPTION_ERROR) are already
+      // received by popup directly via chrome.runtime.sendMessage broadcast.
+      // Background does NOT need to re-broadcast them.
       if (message.type === "RECORDING_STATUS" || message.type === "TRANSCRIPTION_ERROR") {
-        chrome.runtime.sendMessage(message).catch(() => {});
         sendResponse({ ok: true });
         return;
       }
