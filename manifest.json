@@ -1,0 +1,46 @@
+{
+  "manifest_version": 3,
+  "name": "Darija Flash Dictation",
+  "version": "1.0.0",
+  "description": "Press a keyboard shortcut, speak Moroccan Darija, and inject Arabic Darija text into the focused field.",
+  "permissions": [
+    "storage",
+    "commands",
+    "offscreen",
+    "activeTab",
+    "scripting"
+  ],
+  "host_permissions": [
+    "https://generativelanguage.googleapis.com/*"
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "commands": {
+    "toggle-recording": {
+      "suggested_key": {
+        "default": "Ctrl+Shift+Space",
+        "mac": "Command+Shift+Space"
+      },
+      "description": "Start/stop Darija recording"
+    }
+  },
+  "action": {
+    "default_title": "Darija Flash Dictation",
+    "default_popup": "popup.html"
+  },
+  "options_page": "options.html",
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["content.js"],
+      "run_at": "document_idle"
+    }
+  ],
+  "icons": {
+    "16": "icon16.png",
+    "32": "icon32.png",
+    "48": "icon48.png",
+    "128": "icon128.png"
+  }
+}

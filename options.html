@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Darija Flash Dictation - Options</title>
+  <style>
+    body {
+      max-width: 760px;
+      margin: 40px auto;
+      padding: 0 20px;
+      font: 15px system-ui, sans-serif;
+      color: #111827;
+    }
+    h1 { margin-bottom: 6px; }
+    p { color: #4b5563; }
+    label { display: block; margin-top: 18px; font-weight: 600; }
+    input, select {
+      width: 100%;
+      box-sizing: border-box;
+      padding: 10px;
+      margin-top: 8px;
+      border: 1px solid #d1d5db;
+      border-radius: 8px;
+    }
+    button {
+      margin-top: 20px;
+      padding: 10px 16px;
+      border: 0;
+      border-radius: 8px;
+      background: #2563eb;
+      color: white;
+      cursor: pointer;
+    }
+    #saved { margin-left: 12px; color: #047857; }
+    code { background: #f3f4f6; padding: 2px 4px; border-radius: 4px; }
+    .note {
+      padding: 12px;
+      background: #f9fafb;
+      border-radius: 8px;
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Darija Flash Dictation</h1>
+  <p>
+    Add your Google Gemini API key. It is stored locally in this browser profile
+    and sent directly from the extension to Google's Gemini API.
+  </p>
+
+  <label for="apiKey">Gemini API key</label>
+  <input id="apiKey" type="password" autocomplete="off" placeholder="AIza…">
+
+  <label for="model">Gemini model</label>
+  <select id="model">
+    <option value="gemini-3.6-flash">gemini-3.6-flash (recommended)</option>
+    <option value="gemini-2.5-flash">gemini-2.5-flash</option>
+    <option value="gemini-2.5-flash-lite">gemini-2.5-flash-lite</option>
+  </select>
+
+  <button id="save">Save</button>
+  <span id="saved"></span>
+
+  <div class="note">
+    <strong>Usage</strong><br>
+    Focus an input, textarea, or contenteditable field.<br>
+    Press <code>Ctrl+Shift+Space</code> to start talking.<br>
+    Press it again to stop. The Arabic Darija transcription will be injected at the cursor.
+  </div>
+
+<script src="options.js"></script>
+</body>
+</html>

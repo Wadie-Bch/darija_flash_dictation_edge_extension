@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Darija Dictation</title>
+  <style>
+    body {
+      width: 300px;
+      margin: 0;
+      padding: 18px;
+      font: 14px system-ui, sans-serif;
+      background: #111827;
+      color: #f9fafb;
+    }
+    h1 { font-size: 18px; margin: 0 0 12px; }
+    #status {
+      padding: 10px 12px;
+      border-radius: 10px;
+      background: #1f2937;
+      margin-bottom: 12px;
+    }
+    #error {
+      color: #fca5a5;
+      font-size: 12px;
+      line-height: 1.4;
+      margin-top: 8px;
+    }
+    button {
+      width: 100%;
+      padding: 10px;
+      border: 0;
+      border-radius: 8px;
+      cursor: pointer;
+      margin-top: 8px;
+    }
+    #toggle { background: #2563eb; color: white; }
+    #options { background: #374151; color: white; }
+    .hint { margin-top: 10px; font-size: 12px; color: #9ca3af; }
+  </style>
+</head>
+<body>
+  <h1>Darija Flash Dictation</h1>
+  <div id="status">Checking…</div>
+  <button id="toggle">Start recording</button>
+  <button id="options">Open Options</button>
+  <div class="hint">Shortcut: Ctrl+Shift+Space</div>
+  <div id="error"></div>
+<script src="popup.js"></script>
+</body>
+</html>
