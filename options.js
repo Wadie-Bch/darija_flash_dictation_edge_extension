@@ -6,7 +6,7 @@ const saved = document.getElementById("saved");
 async function load() {
   const settings = await chrome.storage.local.get({
     apiKey: "",
-    model: "gemini-3.6-flash"
+    model: "gemini-2.0-flash"
   });
   apiKey.value = settings.apiKey;
   model.value = settings.model;

@@ -3,7 +3,7 @@ let mediaStream = null;
 let chunks = [];
 let recording = false;
 
-const DEFAULT_MODEL = "gemini-3.6-flash";
+const DEFAULT_MODEL = "gemini-2.0-flash";
 
 async function getSettings() {
   return await chrome.storage.local.get({

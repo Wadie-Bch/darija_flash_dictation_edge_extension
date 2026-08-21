@@ -32,6 +32,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     try {
       if (message.type === "RECORDING_STATUS") {
         chrome.runtime.sendMessage(message).catch(() => {});
+        sendResponse({ ok: true });
         return;
       }
 
@@ -43,30 +44,32 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
             text: message.text || ""
           }).catch(() => {});
         }
+        sendResponse({ ok: true });
         return;
       }
 
       if (message.type === "TRANSCRIPTION_ERROR") {
         chrome.runtime.sendMessage(message).catch(() => {});
+        sendResponse({ ok: true });
         return;
       }
+
+      if (message.type === "GET_STATE") {
+        await sendToOffscreen({ type: "GET_STATE" });
+        sendResponse({ ok: true });
+        return;
+      }
+
+      if (message.type === "TOGGLE_RECORDING") {
+        const result = await sendToOffscreen({ type: "TOGGLE_RECORDING" });
+        sendResponse(result ?? { ok: true });
+        return;
+      }
+
+      sendResponse({ ok: true });
     } catch (error) {
-      chrome.runtime.sendMessage({
-        type: "TRANSCRIPTION_ERROR",
-        error: error?.message || String(error)
-      }).catch(() => {});
+      sendResponse({ ok: false, error: error?.message || String(error) });
     }
   })();
-  sendResponse({ ok: true });
-  return true;
-});
-
-// Keep a small status bridge so popup can query current state.
-chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-  if (message.type === "GET_STATE") {
-    sendToOffscreen({ type: "GET_STATE" })
-      .then(() => sendResponse({ ok: true }))
-      .catch(() => sendResponse({ ok: false }));
-    return true;
-  }
+  return true; // keep channel open for async sendResponse
 });
