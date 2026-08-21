@@ -12,9 +12,12 @@ async function ensureOffscreen() {
   }
 }
 
-async function sendToOffscreen(message) {
+// Send a message specifically to the offscreen document using a _target flag.
+// Offscreen ignores messages without _target:"offscreen", background ignores those with it.
+// This prevents the recursive loop where background re-handles its own forwarded messages.
+async function forwardToOffscreen(type, extra = {}) {
   await ensureOffscreen();
-  return chrome.runtime.sendMessage(message);
+  return chrome.runtime.sendMessage({ ...extra, type, _target: "offscreen" });
 }
 
 async function getActiveTab() {
@@ -22,20 +25,26 @@ async function getActiveTab() {
   return tabs[0];
 }
 
+// Handle keyboard shortcut
 chrome.commands.onCommand.addListener(async (command) => {
   if (command !== "toggle-recording") return;
-  await sendToOffscreen({ type: "TOGGLE_RECORDING" });
+  await forwardToOffscreen("OFFSCREEN_TOGGLE").catch(() => {});
 });
 
+// Single onMessage listener — background only handles messages NOT targeted at offscreen.
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+  if (message._target === "offscreen") return; // let offscreen handle these
+
   (async () => {
     try {
-      if (message.type === "RECORDING_STATUS") {
+      // Messages sent up from offscreen → relay to popup
+      if (message.type === "RECORDING_STATUS" || message.type === "TRANSCRIPTION_ERROR") {
         chrome.runtime.sendMessage(message).catch(() => {});
         sendResponse({ ok: true });
         return;
       }
 
+      // Transcription result → inject into the active tab
       if (message.type === "TRANSCRIPTION_READY") {
         const tab = await getActiveTab();
         if (tab?.id != null) {
@@ -48,20 +57,16 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
         return;
       }
 
-      if (message.type === "TRANSCRIPTION_ERROR") {
-        chrome.runtime.sendMessage(message).catch(() => {});
-        sendResponse({ ok: true });
-        return;
-      }
-
-      if (message.type === "GET_STATE") {
-        await sendToOffscreen({ type: "GET_STATE" });
-        sendResponse({ ok: true });
-        return;
-      }
-
+      // Popup requests toggle → forward to offscreen with distinct type
       if (message.type === "TOGGLE_RECORDING") {
-        const result = await sendToOffscreen({ type: "TOGGLE_RECORDING" });
+        const result = await forwardToOffscreen("OFFSCREEN_TOGGLE");
+        sendResponse(result ?? { ok: true });
+        return;
+      }
+
+      // Popup requests current recording state
+      if (message.type === "GET_STATE") {
+        const result = await forwardToOffscreen("OFFSCREEN_GET_STATE");
         sendResponse(result ?? { ok: true });
         return;
       }
@@ -71,5 +76,5 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
       sendResponse({ ok: false, error: error?.message || String(error) });
     }
   })();
-  return true; // keep channel open for async sendResponse
+  return true; // keep message channel open for async sendResponse
 });

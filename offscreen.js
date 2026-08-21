@@ -190,22 +190,27 @@ Task:
 }
 
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+  if (message._target !== "offscreen") return; // only handle messages meant for us
+
   (async () => {
     try {
-      if (message.type === "TOGGLE_RECORDING") {
+      if (message.type === "OFFSCREEN_TOGGLE") {
         if (recording) await stopRecording();
         else await startRecording();
         sendResponse({ ok: true, recording });
         return;
       }
 
-      if (message.type === "GET_STATE") {
+      if (message.type === "OFFSCREEN_GET_STATE") {
         chrome.runtime.sendMessage({
           type: "RECORDING_STATUS",
           recording
         }).catch(() => {});
         sendResponse({ ok: true, recording });
+        return;
       }
+
+      sendResponse({ ok: false, error: "Unknown message type" });
     } catch (error) {
       sendResponse({ ok: false, error: error?.message || String(error) });
     }

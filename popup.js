@@ -15,6 +15,13 @@ function showError(message) {
 }
 
 async function init() {
+  // Guard: chrome.storage can be undefined if the service worker crashed.
+  // Tell the user to reload the extension if that happens.
+  if (!chrome.storage?.local) {
+    showError("Extension error — please go to edge://extensions and reload the extension.");
+    return;
+  }
+
   const settings = await chrome.storage.local.get({ apiKey: "" });
   if (!settings.apiKey) {
     showError("No API key configured yet.");
